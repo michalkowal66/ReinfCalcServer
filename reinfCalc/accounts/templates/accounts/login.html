@@ -1,0 +1,30 @@
+{% extends 'reinfCalcApp/base.html' %}
+{% load widget_tweaks %}
+{% block body_block %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-2">
+        <h1 class="col-md-12 display-6 fw-bold pb-4">Log in to your account:</h1>
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger pb-0" role="alert">
+            {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="Username" class="form-label">Username</label>
+                {% render_field form.username class="form-control" id="Username" type="text" %}
+            </div>
+            <div class="mb-3">
+                <label for="InputPassword" class="form-label">Password</label>
+                {% render_field form.password type="password" class="form-control" id="InputPassword" %}
+            </div>
+            <div class="py-3">
+                <input type="submit" class="btn btn-secondary" value="Log In">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

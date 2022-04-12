@@ -1,0 +1,53 @@
+{% extends 'reinfCalcApp/base.html' %}
+{% load widget_tweaks %}
+{% block body_block %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-2">
+        <h1 class="col-md-12 display-6 fw-bold pb-4">Sing Up here:</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="Username" class="form-label">Username</label>
+                {% render_field form.username class="form-control" id="Username" type="text" %}
+                <div class="form-text">You will use your username to log in.</div>
+                {% if form.username.errors %}
+                <div class="alert alert-danger pb-0 my-2" role="alert">
+                    {{ form.username.errors }}
+                </div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email address</label>
+                {% render_field form.email class="form-control" id="Email" type="email" %}
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                {% if form.email.errors %}
+                <div class="alert alert-danger pb-0" role="alert">
+                    {{ form.email.errors }}
+                </div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="InputPassword1" class="form-label">Password</label>
+                {% render_field form.password1 type="password" class="form-control" id="InputPassword1" %}
+                {% if form.password1.errors %}
+                <div class="alert alert-danger pb-0" role="alert">
+                    {{ form.password2.errors }}
+                </div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="InputPassword2" class="form-label">Repeat Password</label>
+                {% render_field form.password2 type="password" class="form-control" id="InputPassword2" %}
+            </div>
+            {% if form.password2.errors %}
+            <div class="alert alert-danger pb-0" role="alert">
+                {{ form.password2.errors }}
+            </div>
+            {% endif %}
+            <div class="py-3">
+                <input type="submit" class="btn btn-secondary" value="Sign Up">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
