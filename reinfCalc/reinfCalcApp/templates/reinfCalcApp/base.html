@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <title>Reinforcement Calculator</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <script type="text/javascript" id="MathJax-script" src="{% static 'mathjax/tex-chtml.js' %}" async></script>
+    <script type="text/javascript" src="{% static 'mathjax/mathjax_inline.js' %}"></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -17,7 +19,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/michalkowal66/reinfCalc">Client Download</a>
+                    <a class="nav-link" href="https://github.com/michalkowal66/reinfCalc">Get Sources</a>
                 </li>
                 {% if user.is_authenticated %}
                 <li class="nav-item">
