@@ -30,8 +30,6 @@ class ResultsListView(LoginRequiredMixin, ListView):
             task_id = task_enum[0]
             task = task_enum[1]
 
-
-            print(type(task.results))
             task_results = json.loads(task.results)
 
             task_dict = {
