@@ -1,16 +1,43 @@
 {% extends 'reinfCalcApp/base.html' %}
+{% load custom_filters %}
 
 {% block body_block %}
 <div class="p-5 mb-4 bg-light rounded-3">
     <div class="container-fluid py-2">
         {% if object_list %}
+        <h1 class="col-md-12 display-6 fw-bold mb-4">Here are your most recent results:</h1>
+        <div class="accordion" id="accordionExample">
             {% for task in object_list %}
-                {% for key, value in task.items %}
-                    <p class="col-md-10 fs-4">{{value}}</p>
-                {% endfor %}
+            <div class="accordion" id="resultsAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{task.id}}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse{{task.id}}" aria-expanded="true"
+                                aria-controls="collapse{{task.id}}">
+                            {{task.results.self}}
+                        </button>
+                    </h2>
+                    <div id="collapse{{task.id}}" class="accordion-collapse collapse"
+                         aria-labelledby="heading{{task.id}}">
+                        <div class="accordion-body">
+                            <p class="col-md-10 fs-5">Task results:</p>
+                                <p>Provided reinforcement area: ${{ task.results.provided_area | m2TOcm2 }} cm^2$</p>
+                                {% if task.element_type == "plate" or task.element_type == "foot" %}
+                                    <p>Provided reinforcement spacing: ${{ task.results.provided_spacing | mTOcm }} cm$</p>
+                                {% elif task.element_type == "beam" or task.element_type == "column" %}
+                                    <p>Provided bars: {{ task.results.provided_bars }}</p>
+                                {% endif %}
+                                <p>Required reinforcement area: ${{task.results.required_area | m2TOcm2 }} cm^2$</p>
+                                <a class="btn btn-outline-primary" href="{% url 'reinfCalcApp:results-report' task_id=task.id %}">Show
+                                    report</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
+        </div>
         {% else %}
-        <h1 class="col-md-12 display-6 fw-bold">No results found...</h1>
+        <h1 class="col-md-12 display-5 fw-bold">No results found...</h1>
         <p class="col-md-10 fs-4">Seems like you haven't done any calculations yet!</p>
         <p class="col-md-10 fs-4">Login to your account in the reinfCalc application and run calculations to see them
             here.</p>
