@@ -1,0 +1,48 @@
+{% extends 'reinfCalcApp/base.html' %}
+{% load custom_filters %}
+
+{% block body_block %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-2">
+        <h1 class="col-md-12 display-6 fw-bold mb-4">Calculations report - Plate:</h1>
+        <p class="col-md-10 fs-4">Plate geometry:</p>
+        <p>Thickness: $h = {{task.height | mTOcm }} cm$</p>
+        <p>Width of the element: $b = {{task.width}} m$</p>
+        <p class="col-md-10 fs-4">Load:</p>
+        <p>Bending moment: $ M_{Ed} = {{task.bend_moment}} kNm$</p>
+        <p class="col-md-10 fs-4">Concrete characteristics:</p>
+        <p>Class of concrete: {{task.concrete_properties.concrete_class}}</p>
+        <p>Characteristic concrete compressive strength: ${{task.concrete_properties.fck}}MPa$</p>
+        <p>Design concrete compressive strength: $ f_{cd} = \frac{f_{ck}}{1.4} = \frac{ {{task.concrete_properties.fck}} MPa}{1.4} = {{task.f_cd | kiloTOmega}} MPa$</p>
+        <p>Young modulus of concrete: $E_{cm} = {{task.concrete_properties.Ecm}} GPa$</p>
+        <p>Mean concrete tensile strength: $ f_{ctm} = {{task.concrete_properties.fctm}} MPa$</p>
+        <p class="col-md-10 fs-4">Steel characteristics:</p>
+        <p>Grade of steel: {{task.steel_properties.steel_grade}}</p>
+        <p>Characteristic yield strength: $f_{yk} = {{task.f_yk | kiloTOmega}} MPa$</p>
+        <p>Design yield strength: $f_{yk} = {{task.f_yk | kiloTOmega}} MPa$</p>
+        <p>Reinforcement diameter: $\phi = {{task.bar_diam | mTOmm}}mm$</p>
+        <p class="col-md-10 fs-4">Initial assumptions:</p>
+        <p>Concrete cover: $c_{nom} = {{task.nom_cover | mTOcm}}cm$</p>
+        <p class="col-md-10 fs-4">Calculations:</p>
+        <p>$d = h - (c_{nom} + 0.5\phi) = {{task.eff_height | mTOcm}}cm$ - effective height</p>
+        <p>$\mu = \frac{M_{Ed}}{b*d^2*f_{cd}} = {{task.mu | round_four}}$</p>
+        <p>$\mu_{lim} = 0.374$</p>
+        {% if task.mu > 0.374 %}
+            <p>$\mu > \mu_{lim}$</p>
+            <p>Calculated value of $\mu$ is too high!</p>
+        {% else %}
+            <p>$\mu < \mu_{lim}$</p>
+            <p>$\alpha_{1} = 0.973 - \sqrt{0.974 - 1.95\mu} = {{task.alpha_1 | round_four}}$</p>
+            <p>Required reinforcement area: $A_{s1.req} = \alpha_{1}*b*d*\frac{f_{cd}}{f_{yd}} = {{task.required_area | m2TOcm2}}cm^2$</p>
+            <p>Minimum reinforcement area: $A_{s.min} = max(0.26*\frac{f_{ctm}}{f_{yk}}*b*d, 0.0013*b*d) = {{task.min_area | m2TOcm2}} cm^2$</p>
+            <p>Maximum reinforcement area: $A_{s.max} = 0.04*b*h = {{task.max_area | m2TOcm2}} cm^2$</p>
+            <p class="col-md-10 fs-4">Results:</p>
+            <p>Provided spacing of bars: $s = {{task.provided_spacing | mTOcm}}cm$</p>
+            <p>Provided area of reinforcement: $A_{s1.prov} = \frac{b}{s}*\pi*(\frac{\phi}{2})^2 = {{task.provided_area | m2TOcm2}} cm^2$</p>
+            <p>$A_{s1.prov} > A_{s1.req} \land A_{s1.prov} > A_{s.min} \land A_{s1.prov} < A_{s.max}$</p>
+            <p>Assumed $\phi{{task.bar_diam | mTOmm}}$ bars, placed every ${{task.provided_spacing | mTOcm}}cm$</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
