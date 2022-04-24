@@ -103,7 +103,12 @@ def run_calculation(request):
             calculation_results = rc_element.calc_reinforcement()
             response_dict = calculation_results['results']
 
-            # save results to new Task object
+            results_json_string = json.dumps(calculation_results['parameters'])
+
+            task = models.Task(owner=current_user, element_type=element_type, results=results_json_string)
+            task.save()
+
+            # Remove last task if number of tasks exceeds n
 
             return HttpResponse(json.dumps(response_dict), content_type='application/json')
 
