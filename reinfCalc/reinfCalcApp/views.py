@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from accounts import models
+from calcEngine import engine
 import json
 
 
@@ -92,13 +93,19 @@ def run_calculation(request):
     user_agent = request.headers['User-Agent']
     if user_agent.startswith('python-requests'):
         if request.method == 'POST':
-            task_parameters = request.POST.get('task_parameters')
+            task_parameters = json.loads(request.POST.get('task_parameters'))
             current_user = models.User.objects.get(pk=request.user.id)
-            # pass task_parameters to the engine
-            # calculate reinforcement
+
+            element_type = task_parameters['element'][:-4]
+            elementClass = engine.dispatcher[element_type]
+            rc_element = elementClass(task_parameters)
+
+            calculation_results = rc_element.calc_reinforcement()
+            response_dict = calculation_results['results']
+
             # save results to new Task object
-            # return partial results in the response
-            return HttpResponse(json.dumps({"calculation_results": "task_results"}), content_type='application/json')
+
+            return HttpResponse(json.dumps(response_dict), content_type='application/json')
 
         response = HttpResponse(get_token(request))
         return response
