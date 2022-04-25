@@ -5,6 +5,82 @@
 <div class="p-5 mb-4 bg-light rounded-3">
     <div class="container-fluid py-2">
         <h1 class="col-md-12 display-6 fw-bold mb-4">Calculations report - Column:</h1>
+        <p class="col-md-10 fs-4 pt-4">Plate geometry:</p>
+        <p>Height of the element: $h = {{task.height | mTOcm }} cm$</p>
+        <p>Width of the element: $b = {{task.width | mTOcm }} cm$</p>
+        <p class="col-md-10 fs-4 pt-4">Load:</p>
+        <p>Bending moment: $M_{Ed} = {{task.bend_moment}} kNm$</p>
+        <p>Vertical force: $N_{Ed} = {{task.vert_force}} kN$</p>
+        <p>Checking, whether recalculation of the bending moment value is needed:</p>
+        <p>Eccentricity: $e_0 = max(\frac{h}{30}, 2cm) = {{task.eccentricity | mTOcm}}cm$</p>
+        {% if task.moment_modified %}
+            <p>$M_{Ed} < N_{Ed} * e_0$</p>
+            <p>Value of the bending moment needs to be modified</p>
+            <p>$M_{Ed} = N_{Ed} * e_0 = {{task.bend_moment}}$</p>
+        {% else %}
+            <p>$M_{Ed} \ge N_{Ed} * e_0$</p>
+            <p>No need to modify value of the bending moment.</p>
+        {% endif %}
+        <p class="col-md-10 fs-4 pt-4">Concrete characteristics:</p>
+        <p>Class of concrete: {{task.concrete_properties.concrete_class}}</p>
+        <p>Characteristic concrete compressive strength: ${{task.concrete_properties.fck}}MPa$</p>
+        <p>Design concrete compressive strength: $ f_{cd} = \frac{f_{ck}}{1.4} = \frac{ {{task.concrete_properties.fck}} MPa}{1.4} = {{task.f_cd | kiloTOmega}} MPa$</p>
+        <p>Young modulus of concrete: $E_{cm} = {{task.concrete_properties.Ecm}} GPa$</p>
+        <p>Mean concrete tensile strength: $ f_{ctm} = {{task.concrete_properties.fctm}} MPa$</p>
+        <p class="col-md-10 fs-4 pt-4">Steel characteristics:</p>
+        <p>Grade of steel: {{task.steel_properties.steel_grade}}</p>
+        <p>Characteristic yield strength: $f_{yk} = {{task.steel_properties.fyk}} MPa$</p>
+        <p>Design yield strength: $f_{yd} = {{task.f_yd | kiloTOmega}} MPa$</p>
+        <p>Reinforcement diameter: $\phi = {{task.bar_diam | mTOmm}}mm$</p>
+        <p>Assumed stirrups diameter: $\phi_s = 8mm$</p>
+        <p class="col-md-10 fs-4 pt-4">Initial assumptions:</p>
+        <p>Concrete cover: $c_{nom} = {{task.nom_cover | mTOcm}}cm$</p>
+        <p>Then:</p>
+        <p>$a_1 = a_2 = c_{nom} + 0.5\phi + \phi_s = {{task.a | mTOcm}}cm$</p>
+        <p class="col-md-10 fs-4 pt-4">Calculations:</p>
+        <p>$d = h - a_1 = {{task.eff_height | mTOcm}}cm$ - effective height</p>
+        <p>Minimum reinforcement area: $A_{s.min} = max(0.26*\frac{0.01N_{Ed}}{f_{yd}}*b*d, 0.002*b*h) = {{task.min_area | m2TOcm2}} cm^2$</p>
+        <p>Maximum reinforcement area: $A_{s.max} = 0.04*b*h = {{task.max_area | m2TOcm2}} cm^2$</p>
+        <p>$\delta_1 = \frac{a_1}{d} = {{task.delta | round_four}}$</p>
+        <p>$\delta_2 = \delta_1$</p>
+        <p>$S = b*d*f_{cd} = {{task.s | round_four}}kN$</p>
+        <p>$n_{Ed} = \frac{N_{Ed}}{S*d} = {{task.n_ed | round_four}}$</p>
+        <p>$m_{Ed} = \frac{M_{Ed}}{S*d} = {{task.m_ed | round_four}}$</p>
+        <p>$m_{Ed1} = m_{Ed} + 0.5*n_{Ed}*(1-\delta_1) = {{task.m_ed_1 | round_four}}$</p>
+        <p>$\alpha_{1.2.min} = max(0.002*(1+\delta_1)*\frac{f_{yd}}{f_{cd}}, 0.1n_{Ed}) = {{task.alpha_1_2_min | round_four}}$</p>
+        <p>$\alpha_{1.min} = 0.5\alpha_{1.2.min} = {{task.alpha_1_min | round_four}}$</p>
+        <p>$\alpha_{2.min} = \alpha_{1.min} = {{task.alpha_2_min | round_four}}$</p>
+        <p>$f_{ck} \le 50 MPa$ and $f_{yk} = 500 MPa$, then:</p>
+        <p>$\alpha_2 = \frac{m_{Ed1}-0.371}{1-\delta_2} = {{task.alpha_2 | round_four}}$</p>
+        {% if task.alpha_2_ge %}
+            <p>$\alpha_2 \ge \alpha_{2.min}$, then:</p>
+            <p>$\alpha_1 = max(\alpha_{1.min}, 0.5-n_{Ed}+\alpha_2) = {{task.alpha_1 | round_four}}$</p>
+        {% else %}
+            <p>$\alpha_2 < \alpha_{2.min}$, then:</p>
+            <p>$\alpha_2 = \alpha_{2.min} = {{task.alpha_2 | round_four}}$</p>
+            <p>$\alpha_1 = max(0.973-n_{Ed}-sqrt{0.947-1.95m_{Ed1}}, \alpha_{1.min}) = {{task.alpha_1 | round_four}}$</p>
+        {% endif %}
+        <p>Required reinforcement area of the $1^{st}$ group: $A_{s1.req} = \alpha_1 * \frac{S}{f_{yd}} = {{task.required_area_1 | m2TOcm2}}cm^2$</p>
+        <p>Required reinforcement area of the $2^{nd}$ group: $A_{s2.req} = \alpha_2 * \frac{S}{f_{yd}} = {{task.required_area_2 | m2TOcm2}}cm^2$</p>
+        <p class="col-md-10 fs-4 pt-4">Results:</p>
+        {% if task.provided_area_1 %}
+            <p>Provided reinforcement area in the $1^{st}$ group: ${{ task.provided_area_1 | m2TOcm2 }} cm^2$</p>
+            <p>Provided bars in the $1^{st}$ group: {{ task.provided_bars_1 }}</p>
+            <p>$A_{s1.prov} > A_{s1.req}$</p>
+        {% else %}
+            <p>Wasn't able to calculate reinforcement for the $1^{st}$ group.</p>
+        {% endif %}
+        {% if task.provided_area_2 %}
+            <p>Provided reinforcement area in the $2^{nd}$ group: ${{ task.provided_area_2 | m2TOcm2 }} cm^2$</p>
+            <p>Provided bars in the $2^{nd}$ group: {{ task.provided_bars_2 }}</p>
+            <p>$A_{s2.prov} > A_{s2.req}$</p>
+        {% else %}
+            <p>Wasn't able to calculate reinforcement for the $2^{nd}$ group.</p>
+        {% endif %}
+        {% if task.provided_area_1 and task.provided_area_2 %}
+            <p>$A_{s1.prov} + A_{s2.prov} > A_{s.min} \land A_{s1.prov} + A_{s2.prov} < A_{s.max}$</p>
+            <p>Assumed ${{ task.provided_bars_1 }}\phi{{ task.bar_diam | mTOmm }}$ bars in the $1^{st}$ reinforcement group and ${{ task.provided_bars_2 }}\phi{{ task.bar_diam | mTOmm }}$ bars in the reinforcement $2^{nd}$ group</p>
+        {% endif %}
     </div>
 </div>
 

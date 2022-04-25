@@ -5,6 +5,84 @@
 <div class="p-5 mb-4 bg-light rounded-3">
     <div class="container-fluid py-2">
         <h1 class="col-md-12 display-6 fw-bold mb-4">Calculations report - Beam:</h1>
+        <p class="col-md-10 fs-4 pt-4">Beam geometry:</p>
+        <p>Height of the element: $h = {{task.height | mTOcm }} cm$</p>
+        <p>Width of the element: $b = {{task.width | mTOcm }} cm$</p>
+        {% if not task.support_section %}
+            <p>Height of the flange: $h_{fl} = {{task.fl_height | mTOcm }} cm$</p>
+            <p>Width of the flange: $b_{fl} = {{task.fl_width | mTOcm }} cm$</p>
+        {% endif %}
+        <p class="col-md-10 fs-4 pt-4">Load:</p>
+        <p>Bending moment: $ M_{Ed} = {{task.bend_moment}} kNm$</p>
+        <p class="col-md-10 fs-4 pt-4">Concrete characteristics:</p>
+        <p>Class of concrete: {{task.concrete_properties.concrete_class}}</p>
+        <p>Characteristic concrete compressive strength: ${{task.concrete_properties.fck}}MPa$</p>
+        <p>Design concrete compressive strength: $ f_{cd} = \frac{f_{ck}}{1.4} = \frac{ {{task.concrete_properties.fck}} MPa}{1.4} = {{task.f_cd | kiloTOmega}} MPa$</p>
+        <p>Young modulus of concrete: $E_{cm} = {{task.concrete_properties.Ecm}} GPa$</p>
+        <p>Mean concrete tensile strength: $ f_{ctm} = {{task.concrete_properties.fctm}} MPa$</p>
+        <p class="col-md-10 fs-4 pt-4">Steel characteristics:</p>
+        <p>Grade of steel: {{task.steel_properties.steel_grade}}</p>
+        <p>Characteristic yield strength: $f_{yk} = {{task.f_yk | kiloTOmega}} MPa$</p>
+        <p>Design yield strength: $f_{yd} = {{task.f_yd | kiloTOmega}} MPa$</p>
+        <p>Reinforcement diameter: $\phi = {{task.bar_diam | mTOmm}}mm$</p>
+        <p>Assumed stirrups diameter: $\phi_s = 8mm$</p>
+        <p class="col-md-10 fs-4 pt-4">Initial assumptions:</p>
+        <p>Concrete cover: $c_{nom} = {{task.nom_cover | mTOcm}}cm$</p>
+        <p class="col-md-10 fs-4 pt-4">Calculations:</p>
+        <p>$d = h - (c_{nom} + \phi_{s} + 0.5\phi) = {{task.eff_height | mTOcm}}cm$ - effective height</p>
+        <p>Minimum reinforcement area: $A_{s.min} = max(0.26*\frac{f_{ctm}}{f_{yk}}*b*d, 0.0013*b*d) = {{task.min_area | m2TOcm2}} cm^2$</p>
+        <p>Maximum reinforcement area: $A_{s.max} = 0.04*b*h = {{task.max_area | m2TOcm2}} cm^2$</p>
+        {% if task.support_section %}
+            <p>$\mu = \frac{M_{Ed}}{b*d^2*f_{cd}} = {{task.mu | round_four}}$</p>
+            <p>$\mu_{lim} = 0.374$</p>
+            {% if not task.mu_correct %}
+                <p>$\mu > \mu_{lim}$</p>
+                <p>Calculated value of $\mu$ is too high!</p>
+            {% else %}
+                <p>$\mu < \mu_{lim}$</p>
+                <p>$\alpha_{1} = 0.973 - \sqrt{0.974 - 1.95\mu} = {{task.alpha_1 | round_four}}$</p>
+                <p>Required reinforcement area: $A_{s1.req} = max(\alpha_{1}*b*d*\frac{f_{cd}}{f_{yd}}, A_{s.min}) = {{task.required_area | m2TOcm2}}cm^2$</p>
+            {% endif %}
+        {% else %}
+            <p>$\mu = \frac{M_{Ed}}{b_{fl}*d^2*f_{cd}} = {{task.mu | round_four}}$</p>
+            <p>$\mu_{lim} = 0.374$</p>
+            {% if not task.mu_correct %}
+                <p>$\mu > \mu_{lim}$</p>
+                <p>Calculated value of $\mu$ is too high!</p>
+            {% else %}
+                <p>$\mu < \mu_{lim}$</p>
+                <p>Checking whether the section is a real or an apparent 'T' section.</p>
+                <p>$\eta = 1.0$, because: $f_{ck} \le 50MPa$</p>
+                <p>$\lambda_x = \frac{\eta - \sqrt{\eta^{2} - 2\eta\mu}}{\eta} * d = {{ task.lbda_x | mTOcm }}cm$</p>
+                {% if not task.section_real %}
+                    <p>$\lambda_x < h_{fl}$ - apparent 'T' section.</p>
+                    <p>$\alpha_{1} = \eta - \sqrt{\eta^{2} - 2\eta\mu} = {{task.alpha_1 | round_four}}$</p>
+                    <p>Required reinforcement area: $A_{s1.req} = max(\alpha_{1}*b_{fl}*d*\frac{f_{cd}}{f_{yd}}, A_{s.min}) = {{task.required_area | m2TOcm2}}cm^2$</p>
+                {% else %}
+                    <p>$\lambda_x \ge h_{fl}$ - real 'T' section.</p>
+                    <p>$M_1 = h_{fl} * (b_{fl} - b) * (d - 0.5h_{fl}) = {{task.bend_moment_1 | round_four}}kNm$</p>
+                    <p>$M_2 = M_{Ed} - M_1 = {{task.bend_moment_1 | round_four}}kNm$</p>
+                    <p>$\mu = \frac{M_2}{b*d^2*f_{cd}} = {{task.mu_2 | round_four}}$ - recalculating $\mu$</p>
+                    {% if not task.mu2_correct %}
+                        <p>$\mu > \mu_{lim}$</p>
+                        <p>Recalculated value of $\mu$ is too high!</p>
+                    {% else %}
+                        <p>Required reinforcement area of the $1^st$ group: $A_{s1.1} = \frac{M_1}{(d-0.5h_{fl})*f_{yd}} = {{task.required_area_1 | m2TOcm2}}cm^2$</p>
+                        <p>Required reinforcement area of the $2^nd$ group: $A_{s1.2} = (\eta - \sqrt{\eta^{2} - 2\eta\mu})*b*d*\frac{f_{cd}}{f_{yd}} = {{task.required_area_2 | m2TOcm2}}cm^2$</p>
+                        <p>Required reinforcement area: $A_{s1.req} = max(A_{s1.req}+A_{s2.req}, A_{s.min}) = {{task.required_area | m2TOcm2}}cm^2$</p>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+        <p class="col-md-10 fs-4 pt-4">Results:</p>
+        {% if task.provided_area %}
+            <p>Provided bars: $n_b = {{task.provided_bars}}$</p>
+            <p>Provided area of reinforcement: $A_{s1.prov} = n_b*\pi*(\frac{\phi}{2})^2 = {{task.provided_area | m2TOcm2}} cm^2$</p>
+            <p>$A_{s1.prov} > A_{s1.req} \land A_{s1.prov} > A_{s.min} \land A_{s1.prov} < A_{s.max}$</p>
+            <p>Assumed ${{task.provided_bars}} \phi{{task.bar_diam | mTOmm}}$ bars.</p>
+        {% else %}
+            <p>Program wasn't able to find reinforcement configuration meeting specified requirements.</p>
+        {% endif %}
     </div>
 </div>
 
