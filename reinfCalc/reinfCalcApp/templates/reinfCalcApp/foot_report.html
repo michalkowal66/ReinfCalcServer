@@ -5,6 +5,97 @@
 <div class="p-5 mb-4 bg-light rounded-3">
     <div class="container-fluid py-2">
         <h1 class="col-md-12 display-6 fw-bold mb-4">Calculations report - Foundation Foot:</h1>
+        <p class="col-md-10 fs-4 pt-4">Foot geometry:</p>
+        <p>Length of the element: $l = {{task.length | mTOcm }} cm$</p>
+        <p>Width of the element: $b = {{task.width | mTOcm}} cm$</p>
+        <p>Height of the element: $h = {{task.height | mTOcm}} cm$</p>
+        <p class="col-md-10 fs-4 pt-4">Column geometry:</p>
+        <p>Height of the column: $h_c = {{task.c_height | mTOcm}} cm$</p>
+        <p>Width of the column: $b_c = {{task.c_width | mTOcm}} cm$</p>
+        <p class="col-md-10 fs-4 pt-4">Load:</p>
+        <p>Vertical force: $ N_{Ed} = {{task.bend_moment}} kNm$</p>
+        <p class="col-md-10 fs-4 pt-4">Concrete characteristics:</p>
+        <p>Class of concrete: {{task.concrete_properties.concrete_class}}</p>
+        <p>Characteristic concrete compressive strength: ${{task.concrete_properties.fck}}MPa$</p>
+        <p>Design concrete compressive strength: $ f_{cd} = \frac{f_{ck}}{1.4} = \frac{ {{task.concrete_properties.fck}} MPa}{1.4} = {{task.f_cd | kiloTOmega}} MPa$</p>
+        <p>Young modulus of concrete: $E_{cm} = {{task.concrete_properties.Ecm}} GPa$</p>
+        <p>Mean concrete tensile strength: $ f_{ctm} = {{task.concrete_properties.fctm}} MPa$</p>
+        <p>Characteristic 5% fractile tensile strength: $ f_{ctk} = {{task.f_ctk | kiloTOmega}} MPa$</p>
+        <p>Design 5% fractile tensile strength: $ f_{ctd} = {{task.f_ctd | kiloTOmega}} MPa$</p>
+        <p class="col-md-10 fs-4 pt-4">Steel characteristics:</p>
+        <p>Grade of steel: {{task.steel_properties.steel_grade}}</p>
+        <p>Characteristic yield strength: $f_{yk} = {{task.steel_properties.fyk}} MPa$</p>
+        <p>Design yield strength: $f_{yd} = {{task.f_yd | kiloTOmega}} MPa$</p>
+        <p>Reinforcement diameter: $\phi = {{task.bar_diam | mTOmm}}mm$</p>
+        <p>Column reinforcement diameter: $\phi_c = {{task.col_bar_diam | mTOmm}}mm$</p>
+        <p class="col-md-10 fs-4 pt-4">Initial assumptions:</p>
+        <p>Concrete cover: $c_{nom} = {{task.nom_cover | mTOcm}}cm$</p>
+        <p class="col-md-10 fs-4 pt-4">Initial calculations:</p>
+        <p>Checking element's height for starters anchorage:</p>
+        <p>$f_{bd} = 2.25*\eta_1*\eta_2*f_{ctd} = {{task.f_bd | kiloTOmega}} MPa$</p>
+        <p>$l_{b.rqd} = \frac{\phi*f_{yd}}{4f_{bd}} = {{task.required_anchorage | mTOcm}} cm$ - required anchorage</p>
+        <p>$l_{b.min} = max(0.6l_{b.rqd}, 10\phi, 100mm) = {{task.min_anchorage | mTOcm}} cm$ - minimum anchorage</p>
+        <p>$l_{bd} = {{task.assumed_anchorage | mTOcm}} cm$ - assumed anchorage</p>
+        <p>$\nu_{Rd.max} = 0.4 * 0.6 * (1-\frac{f_{ck}}{250})*f_{cd} = {{task.nu_rd_max | kiloTOmega}} MPa$</p>
+        <p>$\beta = 1.15$ - internal column</p>
+        <p>$u_0 = 2 * (h_c + b_c) = {{task.u0 | mTOcm}} cm$ - column perimeter</p>
+        <p>$h_{min.\sigma} = \frac{\beta*N_{Ed}}{\nu_{Rd.max}*u_0} = {{task.h_min | mTOcm}} cm$ - minimum height due to tangential stress</p>
+        <p>$h_{min.anchorage} = l_{bd} + 1.5\phi = {{task.h_cover | mTOcm}} cm$ - minimum height due to anchorage</p>
+        {% if not task.height_correct %}
+        <p>Height of the element doesn't fulfill the requirements.</p>
+        {% else %}
+        <p>$h \ge h_{min.\sigma} \land h \ge h_{min.anchorage}$</p>
+        <p>Height of the element correct.</p>
+        <p class="col-md-10 fs-4 pt-4">Calculations:</p>
+        <p>$A = b*l = {{task.area | round_four}} m^2$ - base area</p>
+        <p>$\sigma = \frac{N_{Ed}}{A} = {{task.sigma | kiloTOmega}} MPa$ - stress under the foot due to column's vertical force</p>
+        <p>$l_{eff} = \frac{b - b_c}{2}+0.15b_c = {{task.eff_length | mTOcm}} cm$ - effective length</p>
+        <p>$M_{Ed} = \sigma * l * \frac{l_{eff}^2}{2} = {{task.bend_moment | round_four}} MPa$</p>
+        <p>$d = h - c_{nom} - \phi = {{task.eff_height | mTOcm}} cm$ - effective height</p>
+        <p>$z = 0.9d = {{task.z | mTOcm}} cm$</p>
+        <p>Minimum reinforcement area: $A_{s.min} = 0.0014 * l * eff_height = {{task.min_area | m2TOcm2}} cm^2$</p>
+        <p>Maximum reinforcement area: $A_{s.max} = 0.04 * l * h = {{task.max_area | m2TOcm2}} cm^2$</p>
+        <p>Required reinforcement area: $A_{s1.req} = \frac{M_{Ed}}{z*f_{yd}} = {{task.total_required_area | m2TOcm2}}cm^2$</p>
+        {% endif %}
+        <p class="col-md-10 fs-4 pt-4">Results:</p>
+        {% if task.provided_area and task.provided_spacing%}
+            <p>Provided spacing of bars: $s = {{task.provided_spacing | mTOcm}}cm$</p>
+            <p>Provided area of reinforcement: $A_{s1.prov} = (\frac{b}{s}*\pi*(\frac{\phi}{2})^2)*l = {{task.provided_area | m2TOcm2}} cm^2$</p>
+            <p>$A_{s1.prov} > A_{s1.req} \land A_{s1.prov} > A_{s.min} \land A_{s1.prov} < A_{s.max}$</p>
+            <p>Assumed $\phi{{task.bar_diam | mTOmm}}$ bars, placed every ${{task.provided_spacing | mTOcm}}cm$.</p>
+            <p class="col-md-10 fs-4 pt-4">Punching verification:</p>
+            <ol>
+                <li class="pb-3">$u_0$ perimeter</li>
+            <p>$\nu_{Rd.max} = 0.4 * 0.6 * (1-\frac{f_{ck}}{250})*f_{cd} = {{task.nu_rd_max | kiloTOmega}} MPa$</p>
+            <p>$\nu_{Ed} = \frac{N_{Ed}}{u_0 * d} = {{task.nu_ed | kiloTOmega}} MPa$</p>
+            {% if not task.nu_ed_correct %}
+                <p>$\nu_{Ed} > \nu_{Rd.max}$ - EC requirement not fulfilled.</p>
+                <p>The element didn't pass the punching verification.</p>
+                </ol>
+            {% else %}
+                <p>$\nu_{Ed} \le \nu_{Rd.max}$ - EC requirement fulfilled.</p>
+                <li class="pb-3">$u$ critical control perimeter</li>
+                <p>$\frac{a}{h} = {{task.a_coeff}}$ - then $a = {{task.a_coeff}} *h = {{task.a}}$</p>
+                <p>$\rho_l = \frac{A_{s1.prov}}{l*d} = {{task.rho_l | percentage}}\%$</p>
+                <p>$k = min(1 + \sqrt{\frac{200mm}{d}}, 2) = {{task.k | round_four}}$</p>
+                <p>$\nu_{min} = 0.035*k^{\frac{3}{2}}*f_{ck}^{\frac{1}{2}} = {{task.nu_min | kiloTOmega}} MPa$</p>
+                <p>$\nu_{rd} = max(0.128*k*(\rho_l*f_{ck})^{\frac{1}{3}}, \nu_{min}) = {{task.nu_rd | kiloTOmega}} MPa$ - critical value of tangential stress in the critical perimeter</p>
+                <p>$u = 2b_c + 2h_c + 2\pi a = {{task.u | mTOcm}} cm$ - critical perimeter</p>
+                <p>$N_{Ed.red} = N_{Ed} - \sigma * (bh + 2a(b + h) + \pi a^2) = {{task.vert_force_red | round_four}} kN$</p>
+                <p>$\nu_{Ed} = \frac{N_{Ed.red}}{ud} = {{task.nu_ed_red | kiloTOmega}} MPa$</p>
+                {% if not task.nu_ed_red_correct %}
+                    <p>$\nu_{Ed} > \nu_{Rd}$ - EC requirement not fulfilled.</p>
+                    <p>The element didn't pass the punching verification.</p>
+                    </ol>
+                {% else %}
+                    <p>$\nu_{Ed} \le \nu_{Rd}$ - EC requirement fulfilled.</p>
+                    </ol>
+                    <p>The element has passed the punching verification.</p>
+                {% endif %}
+            {% endif %}
+        {% else %}
+            <p>Program wasn't able to find reinforcement configuration meeting specified requirements.</p>
+        {% endif %}
     </div>
 </div>
 

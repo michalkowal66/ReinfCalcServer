@@ -363,16 +363,16 @@ class Column(Element):
             if bend_moment < vert_force * eccentricity:
                 remarks.append("Modifying bending moment value.")
                 moment_modified = True
-                bend_moment = vert_force * eccentricity
+                bend_moment = vert_force * eccentricity  # [kNm]
             else:
                 remarks.append("No need to modify bending moment value.")
                 moment_modified = False
 
-            a = (nom_cover + 0.5 * bar_diam + stirrup_diam)
-            eff_height = height - a
+            a = (nom_cover + 0.5 * bar_diam + stirrup_diam)  # [m]
+            eff_height = height - a  # [m]
             delta = a / eff_height
 
-            s = width * eff_height * f_cd
+            s = width * eff_height * f_cd  # [kN]
 
             n_ed = vert_force / s
             m_ed = bend_moment / (s * eff_height)
@@ -403,8 +403,8 @@ class Column(Element):
             min_area = max((0.1 * vert_force) / f_yd, (0.002 * width * height))  # [m^2]
             max_area = 0.04 * width * height  # [m^2]
 
-            required_area_1 = alpha_1 * (s / f_yd)
-            required_area_2 = alpha_2 * (s / f_yd)
+            required_area_1 = alpha_1 * (s / f_yd)  # [m^2]
+            required_area_2 = alpha_2 * (s / f_yd)  # [m^2]
 
             if required_area_1 + required_area_2 < min_area:
                 if required_area_1 < min_area / 2 and required_area_2 < min_area / 2:
@@ -503,22 +503,22 @@ class Foot(Element):
             # Load
             vert_force = self.vert_force  # [kN]
 
-            f_bd = 2.25 * f_ctd
-            required_anchorage = (col_bar_diam / 4) * (f_yd / f_bd)
-            min_anchorage = max(0.6 * required_anchorage, 10 * col_bar_diam, 0.1)
-            assumed_anchorage = max(min_anchorage, round(required_anchorage, 2))
+            f_bd = 2.25 * f_ctd  # [kPa]
+            required_anchorage = (col_bar_diam / 4) * (f_yd / f_bd)  # [m]
+            min_anchorage = max(0.6 * required_anchorage, 10 * col_bar_diam, 0.1)  # [m]
+            assumed_anchorage = max(min_anchorage, ceil(required_anchorage*100)/100)  # [m]
 
-            nu_rd_max = 0.4 * 0.6 * (1 - (f_ck / 250000)) * f_cd
+            nu_rd_max = 0.4 * 0.6 * (1 - (f_ck / 250000)) * f_cd  # [kPa]
 
             # Internal column
             beta = 1.15
 
             # Column's perimeter
-            u0 = 2 * (c_height + c_width)
+            u0 = 2 * (c_height + c_width)  # [m]
 
             # Minimum height and cover
-            h_min = (beta * vert_force) / (nu_rd_max * u0)
-            h_cover = assumed_anchorage + 1.5 * bar_diam
+            h_min = (beta * vert_force) / (nu_rd_max * u0)  # [m]
+            h_cover = assumed_anchorage + 1.5 * bar_diam  # [m]
 
             if height < h_min or height < h_cover:
                 remarks.append("Incorrect height of the element.")
@@ -527,19 +527,19 @@ class Foot(Element):
             else:
                 remarks.append("Height of the element correct.")
                 height_correct = True
-                area = width * length
+                area = width * length  # [m^2]
 
                 # Stress calculation
-                sigma = vert_force / area
+                sigma = vert_force / area  # [kPa]
 
-                eff_length = (width - c_width) / 2 + 0.15 * c_width
-                bend_moment = sigma * length * ((eff_length ** 2) / 2)
+                eff_length = (width - c_width) / 2 + 0.15 * c_width  # [m]
+                bend_moment = sigma * length * ((eff_length ** 2) / 2)  # [kNm]
 
                 # Effective height calculation
                 eff_height = height - nom_cover - 1.5 * bar_diam  # [m]
 
                 # Arm of internal forces
-                z = 0.9 * eff_height
+                z = 0.9 * eff_height  # [m]
 
                 # Min. and max. reinforcement area
                 # TODO Make function to read coefficient from the graph - fig. 22.2 - [1]
@@ -555,12 +555,12 @@ class Foot(Element):
                                                                                       bar_diam=bar_diam,
                                                                                       cover=nom_cover)
 
-                provided_area = provided_area_per_rm * length
+                provided_area = provided_area_per_rm * length  # [m^2]
 
             if all([provided_area, provided_spacing]):
                 remarks.append("Punching verification.")
                 # Punching verification
-                nu_ed = vert_force / (u0 * eff_height)
+                nu_ed = vert_force / (u0 * eff_height)  # [kPa]
 
                 if nu_ed > nu_rd_max:
                     nu_ed_correct = False
@@ -573,18 +573,18 @@ class Foot(Element):
                     # TODO Read a_coeff from graph - fig. 16.14 - [1]:
                     a_coeff = 1.15
 
-                    a = a_coeff * c_width
+                    a = a_coeff * c_width  # [m^2]
 
                     rho_l = provided_area / (length * eff_height)
                     k = min(1 + sqrt(200 / (eff_height * 1000)), 2)
-                    nu_min = 0.035 * (k ** (1.5)) * sqrt(f_ck * 1000)
+                    nu_min = 0.035 * (k ** (1.5)) * sqrt(f_ck * 1000)  # [kPa]
 
-                    nu_rd = max(0.128 * k * (100 * rho_l * ((f_ck)) ** (1 / 3)), nu_min) * 2 * eff_height / a
+                    nu_rd = max(0.128 * k * ((100 * rho_l * f_ck) ** (1 / 3)), nu_min) * 2 * eff_height / a  # [kPa]
 
-                    u = 4 * c_width + 2 * c_height + 2 * pi * a
+                    u = 2 * c_width + 2 * c_height + 2 * pi * a  # [m]
 
-                    vert_force_red = vert_force - sigma * (c_width * c_height + 2 * a * (c_width + c_height) + pi * a ** 2)
-                    nu_ed_red = vert_force_red / (u * eff_height)
+                    vert_force_red = vert_force - sigma * (c_width * c_height + 2 * a * (c_width + c_height) + pi * a ** 2)  # [kN]
+                    nu_ed_red = vert_force_red / (u * eff_height)  # [kPa]
 
                     if nu_ed_red > nu_rd:
                         nu_ed_red_correct = False
