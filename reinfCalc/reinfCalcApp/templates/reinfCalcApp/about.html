@@ -1,0 +1,91 @@
+{% extends 'reinfCalcApp/base.html' %}
+
+{% block body_block %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-2">
+        <h1 class="col-md-12 display-5 fw-bold">Reinforcement Calculator Project</h1>
+        <p class="col-md-10 fs-4 mt-5">About the project</p>
+        <p>Reinforcement Calculator is a desktop application that can be used for dimensioning simple reinforced
+            concrete elements. The app is written in Python using PyQt5, requests, json, and math modules.
+            It communicates with a Django server, that comes with a calculation engine that produces the task results.
+            The server back-end part is written in Python, the front-end part uses Django built-in templating system,
+            Bootstrap4, and MathJax.</p>
+        <p>All the sources (Desktop App, Django Server, Calculation Engine) are available <a
+                class="text-reset" href="{% url 'reinfCalcApp:sources' %}">here</a>.</p>
+        <p class="col-md-10 fs-4 mt-5">Using the application</p>
+        <p>After installing all required modules listed in requirements.txt file and downloading the current code, the
+            application can be started by running main.py script </p>
+        <ul>
+            <li><p class="col-md-10 fs-5 mt-3">Choosing the element to work with</p></li>
+            <p>On start of the application the user is welcomed with the log in screen. With the information used to
+                create
+                the profile user can log in to the application (the server must be online at that time to allow
+                authentication of the user).</p>
+            <p>Once logged in, a main window of the application shows up letting user choose from 4 types of reinforced
+                concrete elements:</p>
+            <ul>
+                <li>Plate</li>
+                <li>Beam</li>
+                <li>Column</li>
+                <li>Foundation foot</li>
+            </ul>
+            <p>In order to begin working with a certain element its corresponding button must be clicked.</p>
+            <li><p class="col-md-10 fs-5 mt-3">Providing necessary data</p></li>
+            <p>Next step is to provide all necessary information about the element, which differ depending on the chosen
+                element type. All fields must be filled bearing in mind units stated in the corresponding labels.</p>
+            <li><p class="col-md-10 fs-5 mt-3">Using built-in resources</p></li>
+            <p>For users' convenience a set of tables containing useful technical parameters has been included in the
+                application. It can be accessed either by selecting Resources->Included Data from the menu bar, or using
+                <kbd><kbd>ctrl</kbd> + <kbd>i</kbd></kbd>
+                keyboard shortcut.</p>
+            <li><p class="col-md-10 fs-5 mt-3">Running calculations</p></li>
+            <p>All the applications are done server-side, in order to obtain the results for the task user has to ensure
+                that following conditions are fulfilled:</p>
+            <ul>
+                <li>The server is online</li>
+                <li>The user has stable internet connection</li>
+            </ul>
+            <p>If so, in order to obtain the simplified results user has to press a
+                <button class="btn btn-secondary btn-sm" disabled>run calculations</button>
+                button.
+            </p>
+            <li><p class="col-md-10 fs-5 mt-3">Generating a report</p></li>
+            <p>Users can access the details of a last calculated task via the application pressing a
+                <button class="btn btn-secondary btn-sm" disabled>generate report</button>
+                button.
+            </p>
+            <p>Doing so will open the default web browser and load a report page for the last calculated task.</p>
+            <p>If the user is not logged in the log in page will be displayed first and redirect the user after
+                successful authentication.</p>
+            <li><p class="col-md-10 fs-5 mt-3">Saving and loading results</p></li>
+            <p>At any time of working with the element, users can save their progress using save option by selecting
+                File->Save
+                from the menu bar, or using <kbd><kbd>ctrl</kbd> + <kbd>s</kbd></kbd> shortcut. The application uses
+                JavaScript Object Notation to save the information about the user's progress.</p>
+        </ul>
+        <p class="col-md-10 fs-4 mt-5">Using the website</p>
+        <p>After deploying the Django server using hosting services, or running it locally on the host device users
+            gain access to the full functionality of the desktop application. The server comes with an account
+            management
+            system (users registration and login), a calculation engine, a task results handling system, and an admin
+            panel.</p>
+        <ul>
+            <li><p class="col-md-10 fs-5 mt-3">Site navigation</p></li>
+            <p>To navigate on the site user should use links in a navbar and a footer.</p>
+            <li><p class="col-md-10 fs-5 mt-3">Creating an account</p></li>
+            <p>In order to create an account user should visit the SignUp page using an appropriate link in the
+                navbar.</p>
+            <p>After successfully creating an account, the user is taken to the log in page.</p>
+            <li><p class="col-md-10 fs-5 mt-3">Accessing the results</p></li>
+            <p>To access the results user first needs to log in.</p>
+            <p>Once the user has logged in, the navbar displays additional link - Results. After the user does any
+                calculations they'll show up there.</p>
+            <p>To access detailed results of calculations, the user has to select task and open the report page using
+                the
+                <button type="button" class="btn btn-outline-primary btn-sm" disabled>Show Report</button>
+                button.
+            </p>
+        </ul>
+    </div>
+</div>
+{% endblock %}

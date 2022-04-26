@@ -1,0 +1,17 @@
+{% extends 'reinfCalcApp/base.html' %}
+
+{% block body_block %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-2">
+        <h1 class="col-md-12 display-5 fw-bold">Get the latest sources:</h1>
+        <p class="col-md-12 fs-4 mb-5 mt-5">Here you can download all necessary files needed to obtain full functionality of the project.</p>
+        <ul>
+            <ol><p class="col-md-10 fs-4 mb-2">ReinfCalc desktop application <a class="text-reset" href="https://github.com/michalkowal66/reinfCalc">source</a>.</p></ol>
+            <ol><p class="col-md-10 fs-4 mb-2">Calculation engine of the application <a class="text-reset" href="https://github.com/michalkowal66/reinfCalcEngine">source</a>.</p></ol>
+            <ol><p class="col-md-10 fs-4">Django server <a class="text-reset" href="https://github.com/michalkowal66/reinfCalcServer">source</a>.</p></ol>
+        </ul>
+        <p class="col-md-12 fs-4 mt-5 mb-2">You can also visit the <a class="text-reset" href="{% url 'reinfCalcApp:about' %}">About</a> page if you need some more information or instructions.</p>
+        <p class="col-md-12 fs-4">Or contact the app authors <a class="text-reset" href="{% url 'reinfCalcApp:contact' %}">here</a>.</p>
+    </div>
+</div>
+{% endblock %}

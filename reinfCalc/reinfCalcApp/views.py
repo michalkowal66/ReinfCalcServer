@@ -14,6 +14,18 @@ class IndexView(TemplateView):
     template_name = 'index.html'
 
 
+class AboutView(TemplateView):
+    template_name = 'about.html'
+
+
+class ContactView(TemplateView):
+    template_name = 'contact.html'
+
+
+class SourcesView(TemplateView):
+    template_name = 'sources.html'
+
+
 class ProfileInfoView(LoginRequiredMixin, TemplateView):
     context_object_name = 'user'
     template_name = 'reinfCalcApp/user_profile.html'
