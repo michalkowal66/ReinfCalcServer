@@ -22,3 +22,7 @@ def kiloTOmega(value):
 @register.filter(name='round_four')
 def round_four(value):
     return round(value, 4)
+
+@register.filter(name='percentage')
+def percentage(value):
+    return round(value*100, 2)
