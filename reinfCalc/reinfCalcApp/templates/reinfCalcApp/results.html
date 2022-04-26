@@ -5,8 +5,8 @@
 <div class="p-5 mb-4 bg-light rounded-3">
     <div class="container-fluid py-2">
         {% if object_list %}
-        <h1 class="col-md-12 display-6 fw-bold mb-4">Here are your most recent results:</h1>
-        <div class="accordion" id="accordionExample">
+        <h1 class="col-md-12 display-5 fw-bold">Here are your most recent results:</h1>
+        <div class="accordion mt-5" id="accordionExample">
             {% for task in object_list %}
             <div class="accordion" id="resultsAccordion">
                 <div class="accordion-item">
@@ -70,7 +70,7 @@
         </div>
 
         {% else %}
-        <h1 class="col-md-12 display-5 fw-bold">No results found...</h1>
+        <h1 class="col-md-12 fs-4 mb-5 mt-5">No results found...</h1>
         <p class="col-md-10 fs-4">Seems like you haven't done any calculations yet!</p>
         <p class="col-md-10 fs-4">Login to your account in the reinfCalc application and run calculations to see them
             here.</p>
