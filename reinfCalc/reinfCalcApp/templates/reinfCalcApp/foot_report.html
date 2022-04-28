@@ -13,10 +13,10 @@
         <p>Height of the column: $h_c = {{task.c_height | mTOcm}} cm$</p>
         <p>Width of the column: $b_c = {{task.c_width | mTOcm}} cm$</p>
         <p class="col-md-10 fs-4 pt-4">Load:</p>
-        <p>Vertical force: $ N_{Ed} = {{task.bend_moment}} kNm$</p>
+        <p>Vertical force: $ N_{Ed} = {{task.vert_force | round_four}} kN$</p>
         <p class="col-md-10 fs-4 pt-4">Concrete characteristics:</p>
         <p>Class of concrete: {{task.concrete_properties.concrete_class}}</p>
-        <p>Characteristic concrete compressive strength: ${{task.concrete_properties.fck}}MPa$</p>
+        <p>Characteristic concrete compressive strength: $f{ck} = {{task.concrete_properties.fck}}MPa$</p>
         <p>Design concrete compressive strength: $ f_{cd} = \frac{f_{ck}}{1.4} = \frac{ {{task.concrete_properties.fck}} MPa}{1.4} = {{task.f_cd | kiloTOmega}} MPa$</p>
         <p>Young modulus of concrete: $E_{cm} = {{task.concrete_properties.Ecm}} GPa$</p>
         <p>Mean concrete tensile strength: $ f_{ctm} = {{task.concrete_properties.fctm}} MPa$</p>
@@ -75,7 +75,7 @@
             {% else %}
                 <p>$\nu_{Ed} \le \nu_{Rd.max}$ - EC requirement fulfilled.</p>
                 <li class="pb-3">$u$ critical control perimeter</li>
-                <p>$\frac{a}{h} = {{task.a_coeff}}$ - then $a = {{task.a_coeff}} *h = {{task.a}}$</p>
+                <p>$\frac{a}{h} = {{task.a_coeff | round_four}}$ - then $a = {{task.a_coeff}} *h = {{task.a}}$</p>
                 <p>$\rho_l = \frac{A_{s1.prov}}{l*d} = {{task.rho_l | percentage}}\%$</p>
                 <p>$k = min(1 + \sqrt{\frac{200mm}{d}}, 2) = {{task.k | round_four}}$</p>
                 <p>$\nu_{min} = 0.035*k^{\frac{3}{2}}*f_{ck}^{\frac{1}{2}} = {{task.nu_min | kiloTOmega}} MPa$</p>
