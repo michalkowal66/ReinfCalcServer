@@ -546,8 +546,8 @@ class Foot(Element):
                 min_area = 0.0014 * length * eff_height  # [m^2]
                 max_area = 0.04 * length * height  # [m^2]
 
-                total_required_area = bend_moment / (z * f_yd)  # [m^2]
-                required_area = max(total_required_area, min_area) / length  # [m^2]
+                total_required_area = max(bend_moment / (z * f_yd), min_area)  # [m^2]
+                required_area = total_required_area / length  # [m^2]
 
                 provided_area_per_rm, provided_spacing = self.get_plate_reinforcement(required_area=required_area,
                                                                                       min_area=min_area / length,
@@ -601,7 +601,7 @@ class Foot(Element):
         calculation_results = {
             'provided_area': [provided_area],
             'provided_reinforcement': [provided_spacing],
-            'required_area': [required_area],
+            'required_area': [total_required_area],
             'remarks': remarks,
         }
 
