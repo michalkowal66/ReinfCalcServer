@@ -75,7 +75,7 @@
             {% else %}
                 <p>$\nu_{Ed} \le \nu_{Rd.max}$ - EC requirement fulfilled.</p>
                 <li class="pb-3">$u$ critical control perimeter</li>
-                <p>$\frac{a}{h} = {{task.a_coeff | round_four}}$ - then $a = {{task.a_coeff}} *h = {{task.a}}$</p>
+                <p>$\frac{a}{h} = {{task.a_coeff}}$ - then $a = {{task.a_coeff}} *h = {{task.a| round_four}}$</p>
                 <p>$\rho_l = \frac{A_{s1.prov}}{l*d} = {{task.rho_l | percentage}}\%$</p>
                 <p>$k = min(1 + \sqrt{\frac{200mm}{d}}, 2) = {{task.k | round_four}}$</p>
                 <p>$\nu_{min} = 0.035*k^{\frac{3}{2}}*f_{ck}^{\frac{1}{2}} = {{task.nu_min | kiloTOmega}} MPa$</p>
