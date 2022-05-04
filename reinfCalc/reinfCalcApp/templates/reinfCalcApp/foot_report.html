@@ -1,5 +1,6 @@
 {% extends 'reinfCalcApp/base.html' %}
 {% load custom_filters %}
+{% load static %}
 
 {% block body_block %}
 <div class="p-5 mb-4 bg-light rounded-3">
@@ -30,6 +31,16 @@
         <p>Column reinforcement diameter: $\phi_c = {{task.col_bar_diam | mTOmm}}mm$</p>
         <p class="col-md-10 fs-4 pt-4">Initial assumptions:</p>
         <p>Concrete cover: $c_{nom} = {{task.nom_cover | mTOcm}}cm$</p>
+        {% if task.recommended_nom_cover %}
+            <p>Recommended value of concrete cover: $c_{nom.rec} = {{task.recommended_nom_cover | mTOcm}} cm$</p>
+            {% if task.nom_cover != task.recommended_nom_cover %}
+            <p>Assumed value of nominal concrete cover doesn't match the calculated recommended value.</p>
+            {% else %}
+            <p>Assumed value of nominal concrete cover correct.</p>
+            {% endif %}
+        {% else %}
+            <p>Not able to calculate the recommended value of concrete cover for selected task.</p>
+        {% endif %}
         <p class="col-md-10 fs-4 pt-4">Initial calculations:</p>
         <p>Checking element's height for starters anchorage:</p>
         <p>$f_{bd} = 2.25*\eta_1*\eta_2*f_{ctd} = {{task.f_bd | kiloTOmega}} MPa$</p>
@@ -53,7 +64,9 @@
         <p>$M_{Ed} = \sigma * l * \frac{l_{eff}^2}{2} = {{task.bend_moment | round_four}} MPa$</p>
         <p>$d = h - c_{nom} - \phi = {{task.eff_height | mTOcm}} cm$ - effective height</p>
         <p>$z = 0.9d = {{task.z | mTOcm}} cm$</p>
-        <p>Minimum reinforcement area: $A_{s.min} = 0.0014 * l * eff_height = {{task.min_area | m2TOcm2}} cm^2$</p>
+        <p>$area_{coefficient} = {{task.area_coefficient}}$ as read from:</p>
+        <p><img src="{% static 'graphs/min_reinf_foot.png' %}" class="img-thumbnail" alt=""></p>
+        <p>Minimum reinforcement area: $A_{s.min} = area_{coefficient} * l * eff_{height} = {{task.min_area | m2TOcm2}} cm^2$</p>
         <p>Maximum reinforcement area: $A_{s.max} = 0.04 * l * h = {{task.max_area | m2TOcm2}} cm^2$</p>
         <p>Required reinforcement area: $A_{s1.req} = \frac{M_{Ed}}{z*f_{yd}} = {{task.total_required_area | m2TOcm2}}cm^2$</p>
         {% endif %}
@@ -75,7 +88,9 @@
             {% else %}
                 <p>$\nu_{Ed} \le \nu_{Rd.max}$ - EC requirement fulfilled.</p>
                 <li class="pb-3">$u$ critical control perimeter</li>
-                <p>$\frac{a}{h} = {{task.a_coeff}}$ - then $a = {{task.a_coeff}} *h = {{task.a| round_four}}$</p>
+                <p>Reading $\frac{a}{h}$ from the table:</p>
+                <p><img src="{% static 'graphs/a_h_foot.png' %}" class="img-thumbnail" alt=""></p>
+                <p>$\frac{a}{h} = {{task.a_coeff}}$ - then $a = {{task.a_coeff}} *h = {{task.a| round_four}} m$</p>
                 <p>$\rho_l = \frac{A_{s1.prov}}{l*d} = {{task.rho_l | percentage}}\%$</p>
                 <p>$k = min(1 + \sqrt{\frac{200mm}{d}}, 2) = {{task.k | round_four}}$</p>
                 <p>$\nu_{min} = 0.035*k^{\frac{3}{2}}*f_{ck}^{\frac{1}{2}} = {{task.nu_min | kiloTOmega}} MPa$</p>

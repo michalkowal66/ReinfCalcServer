@@ -23,6 +23,16 @@
         <p>Reinforcement diameter: $\phi = {{task.bar_diam | mTOmm}}mm$</p>
         <p class="col-md-10 fs-4 pt-4">Initial assumptions:</p>
         <p>Concrete cover: $c_{nom} = {{task.nom_cover | mTOcm}}cm$</p>
+        {% if task.recommended_nom_cover %}
+            <p>Recommended value of concrete cover: $c_{nom.rec} = {{task.recommended_nom_cover | mTOcm}} cm$</p>
+            {% if task.nom_cover != task.recommended_nom_cover %}
+            <p>Assumed value of nominal concrete cover doesn't match the calculated recommended value.</p>
+            {% else %}
+            <p>Assumed value of nominal concrete cover correct.</p>
+            {% endif %}
+        {% else %}
+            <p>Not able to calculate the recommended value of concrete cover for selected task.</p>
+        {% endif %}
         <p class="col-md-10 fs-4 pt-4">Calculations:</p>
         <p>$d = h - (c_{nom} + 0.5\phi) = {{task.eff_height | mTOcm}}cm$ - effective height</p>
         <p>Minimum reinforcement area: $A_{s.min} = max(0.26*\frac{f_{ctm}}{f_{yk}}*b*d, 0.0013*b*d) = {{task.min_area | m2TOcm2}} cm^2$</p>

@@ -35,6 +35,16 @@
         <p>Assumed stirrups diameter: $\phi_s = 8mm$</p>
         <p class="col-md-10 fs-4 pt-4">Initial assumptions:</p>
         <p>Concrete cover: $c_{nom} = {{task.nom_cover | mTOcm}}cm$</p>
+        {% if task.recommended_nom_cover %}
+            <p>Recommended value of concrete cover: $c_{nom.rec} = {{task.recommended_nom_cover | mTOcm}} cm$</p>
+            {% if task.nom_cover != task.recommended_nom_cover %}
+            <p>Assumed value of nominal concrete cover doesn't match the calculated recommended value.</p>
+            {% else %}
+            <p>Assumed value of nominal concrete cover correct.</p>
+            {% endif %}
+        {% else %}
+            <p>Not able to calculate the recommended value of concrete cover for selected task.</p>
+        {% endif %}
         <p>Then:</p>
         <p>$a_1 = a_2 = c_{nom} + 0.5\phi + \phi_s = {{task.a | mTOcm}}cm$</p>
         <p class="col-md-10 fs-4 pt-4">Calculations:</p>
