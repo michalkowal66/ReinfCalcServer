@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <title>Reinforcement Calculator</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
-    <script type="text/javascript" id="MathJax-script" src="{% static 'mathjax/tex-chtml.js' %}" async></script>
-    <script type="text/javascript" src="{% static 'mathjax/mathjax_inline.js' %}"></script>
+    {% block head_block %}
+    {% endblock %}
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">

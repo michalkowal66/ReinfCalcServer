@@ -3,12 +3,12 @@
 {% block body_block %}
 <div class="p-5 mb-4 bg-light rounded-3">
     <div class="container-fluid py-2">
-        <h1 class="col-md-12 display-6 fw-bold">Welcome {{ user.username }}!</h1>
-        <h2 class="col-md-10 display-8 fs-2 mb-4">Here are your information:</h2>
-        <p class="col-md-10 fs-4 mb-1">Username:</p>
-        <p class="col-md-10 fs-4">{{ user.username }}</p>
+        <h1 class="col-md-12 display-5 fw-bold">Welcome, {{ user.username }}!</h1>
+        <h2 class="col-md-10 fs-4 mt-5">Here are your information:</h2>
+        <p class="col-md-10 fs-4 mt-3 mb-1">Username:</p>
+        <p class="col-md-10 fs-5">{{ user.username }}</p>
         <p class="col-md-10 fs-4 mb-1">Email:</p>
-        <p class="col-md-10 fs-4">{{ user.email }}</p>
+        <p class="col-md-10 fs-5">{{ user.email }}</p>
     </div>
 </div>
 {% endblock%}

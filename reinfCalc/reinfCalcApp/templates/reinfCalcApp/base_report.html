@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculations report</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <script type="text/javascript" id="MathJax-script" src="{% static 'mathjax/tex-chtml.js' %}" async></script>
+    <script type="text/javascript" src="{% static 'mathjax/mathjax_inline.js' %}"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'reinfCalcApp:index' %}">ReinfCalc</a>
+        <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'reinfCalcApp:results'%}">Results</a>
+                </li>
+            </ul>
+    </div>
+</nav>
+<div class="container py-4">
+    {% block body_block %}
+    {% endblock %}
+</div>
+<script src="{% static 'js/bootstrap.js' %}"></script>
+</body>
+</html>
