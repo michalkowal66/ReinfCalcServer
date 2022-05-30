@@ -61,17 +61,17 @@ class ResultsReportView(LoginRequiredMixin, ListView):
     context_object_name = 'task'
 
     def get_template_names(self):
-        if self.task_id > len(self.task_object_query):
+        if self.task_id > len(self.task_object_query) or self.task_id <= 0:
             raise Http404
 
         element_type = self.task_object.element_type
-        return [f'{element_type}_report.html']
+        return [f'reports/{element_type}_report.html']
 
     def get_queryset(self):
         self.task_object_query = self.model.objects.filter(owner=self.request.user).order_by('-creation_date')
         self.task_id = self.kwargs['task_id']
 
-        if self.task_id > len(self.task_object_query):
+        if self.task_id > len(self.task_object_query) or self.task_id <= 0:
             return None
 
         self.task_object = self.task_object_query[self.task_id - 1]
@@ -109,20 +109,18 @@ def run_calculation(request):
             current_user = models.User.objects.get(pk=request.user.id)
 
             element_type = task_parameters['element'][:-4]
-            elementClass = engine.dispatcher[element_type]
-            rc_element = elementClass(task_parameters)
+            ElementClass = engine.dispatcher[element_type]
+            rc_element = ElementClass(task_parameters)
 
             calculation_results = rc_element.calc_reinforcement()
-            response_dict = calculation_results['results']
 
+            response_dict = json.dumps(calculation_results['results'])
             results_json_string = json.dumps(calculation_results['parameters'])
 
             task = models.Task(owner=current_user, element_type=element_type, results=results_json_string)
             task.save()
 
-            # Remove last task if number of tasks exceeds n
-
-            return HttpResponse(json.dumps(response_dict), content_type='application/json')
+            return HttpResponse(response_dict, content_type='application/json')
 
         response = HttpResponse(get_token(request))
         return response
