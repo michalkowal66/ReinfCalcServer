@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm
-from accounts.models import User, Task
+from accounts.models import User
 
 
 class UserSignUpForm(UserCreationForm):
