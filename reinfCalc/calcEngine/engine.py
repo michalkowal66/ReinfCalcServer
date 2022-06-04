@@ -169,27 +169,24 @@ class Plate(Element):
             max_area = 0.04 * width * height  # [m^2]
 
             mu_lim = 0.374  # [-]
-            xi_lim = 0.625  # [-]
 
             mu = bend_moment / (width * (eff_height ** 2) * f_cd)  # [-]
             if mu > mu_lim:
-                remarks.append("Mu value higher than limit value.")
+                remarks.append("Mu value too high!")
                 mu_correct = False
-
-                alpha_1 = ((1 - xi_lim) / xi_lim) * (((0.973 - sqrt(0.947 - 1.95 * mu)) ** 2)/(sqrt(0.947 - 1.95 * mu) - 0.164))  # [-]
             else:
                 mu_correct = True
-                remarks.append("Mu value lower than limit value.")
+                remarks.append("Mu value correct.")
 
                 alpha_1 = 0.973 - sqrt((0.974 - 1.95 * mu))  # [-]
 
-            required_area = max(alpha_1 * width * eff_height * (f_cd / f_yd), min_area)  # [m^2]
+                required_area = max(alpha_1 * width * eff_height * (f_cd / f_yd), min_area)  # [m^2]
 
-            provided_area, provided_spacing = self.get_plate_reinforcement(required_area=required_area,
-                                                                           min_area=min_area,
-                                                                           max_area=max_area,
-                                                                           bar_diam=bar_diam,
-                                                                           cover=nom_cover)
+                provided_area, provided_spacing = self.get_plate_reinforcement(required_area=required_area,
+                                                                               min_area=min_area,
+                                                                               max_area=max_area,
+                                                                               bar_diam=bar_diam,
+                                                                               cover=nom_cover)
 
         remarks.append("Calculations finished.")
 
