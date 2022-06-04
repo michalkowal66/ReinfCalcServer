@@ -6,15 +6,15 @@ from accounts import forms
 # Create your views here.
 class SignUpView(CreateView):
     form_class = forms.UserSignUpForm
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('accounts:login')
     template_name = 'accounts/singup.html'
 
 
 class UserLoginView(LoginView):
     template_name = 'accounts/login.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('reinfCalcApp:index')
 
 
 class UserLogoutView(LogoutView):
     template_name = 'accounts/logout.html'
-    success_url = reverse_lazy('logout')
+    success_url = reverse_lazy('accounts:logout')
