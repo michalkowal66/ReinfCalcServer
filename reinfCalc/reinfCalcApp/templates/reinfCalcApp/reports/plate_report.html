@@ -39,14 +39,15 @@
         <p>Maximum reinforcement area: $A_{s.max} = 0.04*b*h = {{task.max_area | m2TOcm2}} cm^2$</p>
         <p>$\mu = \frac{M_{Ed}}{b*d^2*f_{cd}} = {{task.mu | round_four}}$</p>
         <p>$\mu_{lim} = 0.374$</p>
+        <p>$\xi_{lim} = 0.625$</p>
         {% if not task.mu_correct %}
             <p>$\mu > \mu_{lim}$</p>
-            <p>Calculated value of $\mu$ is too high!</p>
+            <p>$\alpha_{1} = \frac{1 - \xi_{lim}}{\xi_{lim}} * \frac{(0.973 - \sqrt{0.947 - 1.95 * \mu})^2}{\sqrt{0.947 - 1.95 * \mu} - 0.164} = {{task.alpha_1 | round_four}}$</p>
         {% else %}
             <p>$\mu < \mu_{lim}$</p>
             <p>$\alpha_{1} = 0.973 - \sqrt{0.974 - 1.95\mu} = {{task.alpha_1 | round_four}}$</p>
-            <p>Required reinforcement area: $A_{s1.req} = max(\alpha_{1}*b*d*\frac{f_{cd}}{f_{yd}}, A_{s.min}) = {{task.required_area | m2TOcm2}}cm^2$</p>
         {% endif %}
+        <p>Required reinforcement area: $A_{s1.req} = max(\alpha_{1}*b*d*\frac{f_{cd}}{f_{yd}}, A_{s.min}) = {{task.required_area | m2TOcm2}}cm^2$</p>
         <p class="col-md-10 fs-4 pt-4">Results:</p>
         {% if task.provided_area %}
             <p>Provided spacing of bars: $s = {{task.provided_spacing | mTOcm}}cm$</p>
