@@ -32,10 +32,21 @@ class ProfileInfoView(LoginRequiredMixin, TemplateView):
 
 
 class ResultsListView(LoginRequiredMixin, ListView):
+    """
+    Class based view used to display all user's tasks.
+    """
     model = models.Task
     template_name = 'reinfCalcApp/results.html'
 
     def get_queryset(self):
+        """
+        Return list of Tasks assigned to the currently logged in user
+
+        Overwrite default get_queryset method. Query all Task objects assigned to the current user, sorted by creation
+        date. For each task create a dictionary containing its id (for creating a link to the  appropriate report),
+        information about the type of the element, and calculation results. Save each dictionary in a list
+        which is then returned by the method.
+        """
         tasks_query = self.model.objects.filter(owner=self.request.user).order_by('-creation_date')
         tasks = []
 
@@ -57,10 +68,19 @@ class ResultsListView(LoginRequiredMixin, ListView):
 
 
 class ResultsReportView(LoginRequiredMixin, ListView):
+    """
+    Class based view used to display report from the user's task calculations.
+    """
     model = models.Task
     context_object_name = 'task'
 
     def get_template_names(self):
+        """
+        Get the name of the template based on element type
+
+        Check whether provided id of the task is correct. If yes, access the information about the type of the element
+        and return the template's name according to set scheme. Otherwise, render 404 error page.
+        """
         if self.task_id > len(self.task_object_query) or self.task_id <= 0:
             raise Http404
 
@@ -68,6 +88,14 @@ class ResultsReportView(LoginRequiredMixin, ListView):
         return [f'reports/{element_type}_report.html']
 
     def get_queryset(self):
+        """
+        Return the parameters of the task used in the template to render the report page
+
+        Overwrite default get_queryset method. Query all Task objects assigned to the current user, sorted by creation
+        date. Access the id of desired task provided by the user in the URL. Check whether the id is correct.
+        If yes, parse the results from json string format to a dictionary and return it.
+        Otherwise, do not return anything.
+        """
         self.task_object_query = self.model.objects.filter(owner=self.request.user).order_by('-creation_date')
         self.task_id = self.kwargs['task_id']
 
@@ -81,6 +109,13 @@ class ResultsReportView(LoginRequiredMixin, ListView):
 
 
 def auth_app_user(request):
+    """
+    Function based view used to authenticate the application's users
+
+    Check the information about the request, if the request was not made using python-requests script, render 404 page.
+    Otherwise, depending on the request method try to authenticate user (on POST method), or return the CSRF token
+    (on GET method).
+    """
     user_agent = request.headers['User-Agent']
     if user_agent.startswith('python-requests'):
         if request.method == 'POST':
@@ -102,6 +137,16 @@ def auth_app_user(request):
 
 @login_required
 def run_calculation(request):
+    """
+    Function based view used to calculate tasks requested by the application
+
+    Check the information about the request, if the request was not made using python-requests script, render 404 page.
+    Otherwise, depending on the request method try to perform calculations (on POST method), or return the CSRF token
+    (on GET method). On POST method, read the task parameters from the request, extract information about the type
+    of the element, and provide it to the calculation engine's dispatcher. Initialize the element object and run
+    calculations. Divide results of the calculations to a response dictionary and results string. Save results to
+    the Task model assigned to the appropriate user. Return the response dictionary in the HttpResponse.
+    """
     user_agent = request.headers['User-Agent']
     if user_agent.startswith('python-requests'):
         if request.method == 'POST':
